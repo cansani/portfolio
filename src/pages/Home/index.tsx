@@ -16,14 +16,24 @@ interface Project {
   id: number,
   name: string,
   html_url: string
+  homepage: string
 }
 
 export function Home() {
   const [projects, setProjects] = useState<Project[]>([])
-  const [theme, setTheme] = useState<string>('light')
+  const [theme, setTheme] = useState<string>(loadTheme())
 
   function handleSwitchTheme() {
     theme === 'light' ? setTheme('dark') : setTheme('light')
+  }
+
+  function saveThemeInLocalStorage(currentTheme: string) {
+    localStorage.setItem('portfolio:theme', currentTheme)
+  }
+
+  function loadTheme() {
+    const selectedTheme = localStorage.getItem('portfolio:theme')
+    return selectedTheme ? selectedTheme : 'light'
   }
 
   useEffect(() => {
@@ -34,6 +44,10 @@ export function Home() {
 
     getProjects()
   }, [])
+
+  useEffect(() => {
+    saveThemeInLocalStorage(theme)
+  }, [theme])
 
   const randomImg: string[] = [
     'https://images.unsplash.com/photo-1582056615449-5dcb2332b3b2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -74,6 +88,7 @@ export function Home() {
                     key={item.id}
                     name={item.name}
                     url={item.html_url}
+                    homepage={item.homepage}
                     randomImg={randomImg[index % randomImg.length]}
                   />
                 ))}
